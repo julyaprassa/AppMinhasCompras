@@ -6,13 +6,61 @@
     <!-- Navegação -->
     <ContentPage.ToolbarItems>
         <!-- Somar o total da lista de compras -->
-        <ToolbarItem Text="Somar"/>
+        <ToolbarItem Text="Somar" Clicked="ToolbarItem_Clicked_1"/>
         <!-- Adicionar produtos -->
         <ToolbarItem Text="Adicionar" Clicked="ToolbarItem_Clicked"/>
 
     </ContentPage.ToolbarItems>
         
     <VerticalStackLayout>
-  
+        
+        <!-- Mecanismo de busca -->
+        <SearchBar x:Name="txt_search" 
+                   Placeholder="Digite para buscar produtos"
+                   TextChanged="txt_search_TextChanged"/>
+
+        <!-- Exibir lista dos dados (coleção de itens) -->
+        <ListView x:Name="lst_produtos">
+
+            <!-- Título das colunas -->
+            <ListView.Header>
+                <!-- Dados por coluna -->
+                <Grid ColumnDefinitions="*, *, *, *, *">
+                    
+                    <!-- Texto das informações na coluna (grid) -->
+                    <Label Grid.Column="0" Text="ID"/>
+                    <Label Grid.Column="1" Text="Descrição"/>
+                    <Label Grid.Column="2" Text="Preço"/>
+                    <Label Grid.Column="3" Text="Quantidade"/>
+                    <Label Grid.Column="4" Text="Total"/>
+                    
+                </Grid>
+            </ListView.Header>
+
+            <ListView.ItemTemplate>
+                <DataTemplate> 
+                    
+                    <!-- Ver conteúdo dentro da listview -->
+                    <ViewCell>
+
+                        <!-- Interação do usuário com item (segura ou desliza): Aparece a opção remover -->
+                        <ViewCell.ContextActions>
+                            <MenuItem Text="Remover" Clicked="MenuItem_Clicked"/>
+                        </ViewCell.ContextActions>
+
+                        <Grid ColumnDefinitions="*, *, *, *, *">
+                            <Label Grid.Column="0" Text="{Binding Id}"/>
+                            <Label Grid.Column="1" Text="{Binding Descricao}"/>
+                            <Label Grid.Column="2" Text="{Binding Preco}"/>
+                            <Label Grid.Column="3" Text="{Binding Quantidade}"/>
+                            <Label Grid.Column="4" Text="{Binding Total}"/>
+                        </Grid>
+
+                    </ViewCell>
+                        
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            
+        </ListView>
     </VerticalStackLayout>
 </ContentPage>
