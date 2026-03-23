@@ -16,48 +16,117 @@ public partial class ListaProduto : ContentPage
 	}
 
 	// Inicia dados toda vez que a página é aberta
-    protected async override void OnAppearing()
-    {
-		List<Produto> tmp = await App.Db.GetAll();
-
-		tmp.ForEach( i => Lista.Add(i));
-    }
-
-	// Navegar para outra página caso clique (botão adicionnar)
-    private void ToolbarItem_Clicked(object sender, EventArgs e)
-    {
+	protected async override void OnAppearing()
+	{
 		try
-		{ 
-		Navigation.PushAsync(new Views.NovoProduto());
+		{
+			// recarrega lista
+			Lista.Clear();
+
+			List<Produto> tmp = await App.Db.GetAll();
+
+			tmp.ForEach(i => Lista.Add(i));
+		}
+
+		catch (Exception ex)
+		{
+			await DisplayAlert("Ops", ex.Message, "OK");
+		}
+
+
+	}
+
+	// Navegar para outra página caso clique (botão adicionar)
+	private void ToolbarItem_Clicked(object sender, EventArgs e)
+	{
+		try
+		{
+			Navigation.PushAsync(new Views.NovoProduto());
 		}
 		catch (Exception ex)
 		{
-            DisplayAlert("Ops", ex.Message, "OK");
+			DisplayAlert("Ops", ex.Message, "OK");
 		}
-    }
+	}
 
-    private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
-    {
-		string q = e.NewTextValue;
+	// Pesquisa conforme o texto é digitado e modificado
 
-		Lista.Clear();
+	private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
+	{
+		try
+		{
+			string q = e.NewTextValue;
 
-        List<Produto> tmp = await App.Db.Search(q);
+			Lista.Clear();
 
-        tmp.ForEach(i => Lista.Add(i));
-    }
+			List<Produto> tmp = await App.Db.Search(q);
 
-    private void ToolbarItem_Clicked_1(object sender, EventArgs e)
-    {
+			tmp.ForEach(i => Lista.Add(i));
+		}
+
+		catch (Exception ex)
+		{
+			await DisplayAlert("Ops", ex.Message, "OK");
+		}
+
+	}
+
+	// Soma do total dos produtos
+	private void ToolbarItem_Clicked_1(object sender, EventArgs e)
+	{
 		double soma = Lista.Sum(i => i.Total);
 
 		string msg = $"O total é {soma:C}";
 
 		DisplayAlert("Total dos produtos", msg, "OK");
-    }
+	}
 
-    private void MenuItem_Clicked(object sender, EventArgs e)
+	private async void MenuItem_Clicked(object sender, EventArgs e)
+	{
+		try
+		{
+			// ao clicar no menu item mostrará o item selecionado
+			MenuItem selecionado = sender as MenuItem;
+
+			Produto p = selecionado.BindingContext as Produto;
+
+			// confirmar remoção do produto
+			bool confirm = await DisplayAlert("Tem certeza?", $"Deseja remover {p.Descricao}?", "Sim", "Não");
+
+			if (confirm)
+			{
+				// remoção do banco de dados
+				await App.Db.Delete(p.Id);
+
+				// remover da observable collection
+				Lista.Remove(p);
+
+			}
+		}
+
+		catch (Exception ex)
+		{
+			DisplayAlert("Ops", ex.Message, "OK");
+
+		}
+	}
+
+    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
+		try
+		{
+			Produto p = e.SelectedItem as Produto;
 
+			// tela editar produto
+			Navigation.PushAsync(new Views.EditarProduto
+			{
+				BindingContext = p
+			});
+		}
+
+		catch (Exception ex)
+		{
+			DisplayAlert("Ops", ex.Message, "OK");
+		}
     }
 }

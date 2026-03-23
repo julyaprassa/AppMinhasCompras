@@ -20,7 +20,7 @@
                    TextChanged="txt_search_TextChanged"/>
 
         <!-- Exibir lista dos dados (coleção de itens) -->
-        <ListView x:Name="lst_produtos">
+        <ListView x:Name="lst_produtos" ItemSelected="lst_produtos_ItemSelected">
 
             <!-- Título das colunas -->
             <ListView.Header>
