@@ -1,5 +1,6 @@
 ﻿using AppMinhasCompras.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 
 namespace AppMinhasCompras
 {
@@ -39,6 +40,9 @@ namespace AppMinhasCompras
         public App()
         {
             InitializeComponent();
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("pt-BR");
+
        MainPage = new NavigationPage(new Views.ListaProduto());
         }
     }

@@ -56,8 +56,11 @@ public partial class ListaProduto : ContentPage
 		try
 		{
 			string q = e.NewTextValue;
+			// atualizando
+            lst_produtos.IsRefreshing = true;
+       
 
-			Lista.Clear();
+        Lista.Clear();
 
 			List<Produto> tmp = await App.Db.Search(q);
 
@@ -68,8 +71,11 @@ public partial class ListaProduto : ContentPage
 		{
 			await DisplayAlert("Ops", ex.Message, "OK");
 		}
-
-	}
+        finally
+        {
+            lst_produtos.IsRefreshing = false;
+        }
+    }
 
 	// Soma do total dos produtos
 	private void ToolbarItem_Clicked_1(object sender, EventArgs e)
@@ -127,6 +133,29 @@ public partial class ListaProduto : ContentPage
 		catch (Exception ex)
 		{
 			DisplayAlert("Ops", ex.Message, "OK");
+		}
+    }
+
+	// regarregar lista
+    private async void lst_produtos_Refreshing(object sender, EventArgs e)
+    {
+		try
+		{
+			// recarrega lista
+			Lista.Clear();
+
+			List<Produto> tmp = await App.Db.GetAll();
+
+			tmp.ForEach(i => Lista.Add(i));
+		}
+
+		catch (Exception ex)
+		{
+			await DisplayAlert("Ops", ex.Message, "OK");
+		}
+		// executa de qualquer maneira (para parar o "carregamento")
+		finally {
+			lst_produtos.IsRefreshing = false;
 		}
     }
 }
